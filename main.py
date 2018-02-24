@@ -64,7 +64,6 @@ class MainWindow(object):
         self.canvas.itemconfigure(self.displayTotal, text="Total\nBacteria: %d\nPredators: %d" 
                 % (self.model.count_bacteria(), self.model.count_predators()) )
 
-
     def on_canvas_mouse_move(self, event):
         hexCoords = self.conv.plain_to_hex(event.x,event.y)
         if hexCoords!=self.currHexCoords and hexCoords in self.model.field._field:
@@ -78,7 +77,6 @@ class MainWindow(object):
                 prEnergy = str([x.energy for x in self.model.predatorPositions[hexCoords]])
             self.canvas.itemconfigure(self.displayCoords, text="x=%d, y=%d, z=%d\nBacteria: %d\nPredators: %d %s" 
                 % (hexCoords.x, hexCoords.y, -hexCoords.x-hexCoords.y, numBacteria, numPredators, prEnergy) )
-    
     
     def stop_play_or_step(self):
         if self.play:

@@ -44,8 +44,9 @@ class CoreModel(object):
     def step_predators(self):
         newPredatorPositions = dict()
         for hc in self.predatorPositions:
+            notOvercrowded = self.check_predators_overcrowd(hc)
             for pr in self.predatorPositions[hc]:
-                if len(self.predatorPositions[hc])<self.modelParams.PR_OVERCROWD and pr.energy>=self.modelParams.PR_DIVIDE_ENERGY and rand_p(self.modelParams.P_PR_DIVIDE)==1:
+                if notOvercrowded and pr.energy>=self.modelParams.PR_DIVIDE_ENERGY and rand_p(self.modelParams.P_PR_DIVIDE)==1:
                     # DIVIDE
                     if not hc in newPredatorPositions:
                         newPredatorPositions[hc] = []
@@ -103,8 +104,9 @@ class CoreModel(object):
     def step_bacteria(self):
         newBacteriaPositions = dict()
         for hc in self.bacteriaPositions:
+            notOvercrowded = self.check_bacteria_overcrowd(hc)
             for bact in self.bacteriaPositions[hc]:
-                if len(self.bacteriaPositions[hc])<self.modelParams.BACT_OVERCROWD and rand_p(self.modelParams.P_BACT_DIVIDE)==1:
+                if notOvercrowded and rand_p(self.modelParams.P_BACT_DIVIDE)==1:
                     if not hc in newBacteriaPositions:
                         newBacteriaPositions[hc] = []
                     newBacteriaPositions[hc].append(Bacteria())
@@ -139,6 +141,28 @@ class CoreModel(object):
             res += len(self.predatorPositions[hc])
         return res
     
+    
+    def check_bacteria_overcrowd(self, hexCoords):
+        '''
+        Checks if number of bacteria near hexCoords in radius BACT_OVERCROWD_RADIUS less than BACT_OVERCROWD
+        '''
+        res = 0
+        coords = self.field.get_all_within(hexCoords, self.modelParams.BACT_OVERCROWD_RADIUS)
+        for hc in coords:
+            if hc in self.bacteriaPositions:
+                res+=len(self.bacteriaPositions[hc])
+        return res<self.modelParams.BACT_OVERCROWD
+    
+    def check_predators_overcrowd(self, hexCoords):
+        '''
+        Checks if number of bacteria near hexCoords in radius PR_OVERCROWD_RADIUS less than PR_OVERCROWD
+        '''
+        res = 0
+        coords = self.field.get_all_within(hexCoords, self.modelParams.PR_OVERCROWD_RADIUS)
+        for hc in coords:
+            if hc in self.predatorPositions:
+                res+=len(self.predatorPositions[hc])
+        return res<self.modelParams.PR_OVERCROWD
     
                 
             

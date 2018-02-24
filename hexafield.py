@@ -87,7 +87,10 @@ class HexafieldBase(object):
         '''
         Returns set of HexCoords of all cells close to hexCoords
         in given radius (excluding hexCoords itself)
-        TODO: consider optimizations (loop ranges are excessive)
+        (Remark 'bout excessive loops - timeit measures shows quite similar results for this version and
+            for r in range(radius):
+                res |= self.get_at_exact_range(hexCoords, r+1)
+        one.)
         '''
         res = set()
         for dx in range(-radius, radius+1):
@@ -98,6 +101,19 @@ class HexafieldBase(object):
                         res.add(hc)
         return res
     
+    def get_all_within(self, hexCoords, radius):
+        '''
+        Returns set of HexCoords of all cells within the given radius
+        '''
+        res = set()
+        for dx in range(-radius, radius+1):
+            for dy in range (-radius, radius+1):
+                if abs(dx+dy)<=radius:
+                    hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
+                    if hc in self._field:
+                        res.add(hc)
+        return res
+        
     def get_at_exact_range(self, hexCoords, radius = 1):
         '''
         Returns set of HexCoords of all cells located at
@@ -269,7 +285,20 @@ if __name__=='__main__':
             self.assertTrue( HexCoords(1,1) in nb)
             nb = hf.get_neighbours(HexCoords(0,2),2)
             self.assertEqual(len(nb),8)
-            
+        
+        def test_get_all_within(self):
+            hf = CircleHexafield(2)
+            nb = hf.get_all_within(HexCoords(1,0),1)
+            self.assertEqual(len(nb),7)
+            nb = hf.get_all_within(HexCoords(0,2),1)
+            self.assertEqual(len(nb),4)
+            self.assertTrue( HexCoords(-1,2) in nb)
+            self.assertTrue( HexCoords(0,1) in nb)
+            self.assertTrue( HexCoords(1,1) in nb)
+            self.assertTrue( HexCoords(0,2) in nb)
+            nb = hf.get_all_within(HexCoords(0,2),2)
+            self.assertEqual(len(nb),9)
+        
         def test_get_at_exact_range(self):
             hf = CircleHexafield(2)
             nb = hf.get_at_exact_range(HexCoords(0,2))
