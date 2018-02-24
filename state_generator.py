@@ -6,59 +6,49 @@ import random
 
 import hexafield
 from hexafield import CircleHexafield
-from cell_data import CellData, Predator, Bacteria
+from creatures import Predator, Bacteria
+from state import BacterioState
 
 def generate_state(fieldRadius, numBacteria, numPredators):
     '''
     Generates initial state on CircleHexafield with given fieldRadius.
     Each object placed on different cell. If there are more objects (numBacteria+numPredators) than
     cells, function fills the entire field than returns.
-    Returns CircleHexafield with CellData as field's values
+    Returns state.BacterioState
     '''
-    state = CircleHexafield(fieldRadius)
-    unoccupiedCells = [ x for x in state.field.keys() ]
+    field = CircleHexafield(fieldRadius)
+    bacteriaPositions = dict()
+    predatorPositions = dict()
+    unoccupiedCells = [ x for x in field._field ]
     for i in range(numBacteria):
-        cellData = CellData(bacteria = [Bacteria()])
         hc = random.choice(unoccupiedCells)
-        state.field[hc] = cellData
+        bacteriaPositions[hc] = [Bacteria()]
         unoccupiedCells.remove(hc)
         if len(unoccupiedCells)==0:
-            return state
+            return BacterioState(field, bacteriaPositions, predatorPositions)
         
     for i in range(numPredators):
-        cellData = CellData(predators = [Predator()])
         hc = random.choice(unoccupiedCells)
-        state.field[hc] = cellData
+        predatorPositions[hc] = [Predator()]
         unoccupiedCells.remove(hc)
         if len(unoccupiedCells)==0:
-            return state
+            return BacterioState(field, bacteriaPositions, predatorPositions)
  
-    return state
+    return BacterioState(field, bacteriaPositions, predatorPositions)
 
 
 if __name__=='__main__':
     import unittest
     
     def calculate_occupied_cells(state):
-        res = 0
-        for hc in state.field:
-            if isinstance(state.field[hc], CellData):
-                res+=1
-        return res
+        return len(state.bacteriaPositions)+len(state.predatorPositions)
     
     def calculate_bacteria(state):
-        res = 0
-        for hc in state.field:
-            if isinstance(state.field[hc], CellData):
-                res+=len(state.field[hc].bacteria)
-        return res
+        return len(state.bacteriaPositions)
            
     def calculate_predator(state):
-        res = 0
-        for hc in state.field:
-            if isinstance(state.field[hc], CellData):
-                res+=len(state.field[hc].predators)
-        return res
+        return len(state.predatorPositions)
+
 
     
     class TestGenerateState(unittest.TestCase):

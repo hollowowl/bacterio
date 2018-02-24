@@ -2,6 +2,8 @@
 Stores core model's parameters
 '''
 
+from decimal import Decimal
+
 class ModelParams(object):
     '''
     Stores core model's parameters:
@@ -11,7 +13,7 @@ class ModelParams(object):
     '''
     __slots__ = ['P_BACT_DIVIDE', 'P_BACT_STAY']
     
-    def __init__(self, P_BACT_DIVIDE=0.01, P_BACT_STAY=0.2):
+    def __init__(self, P_BACT_DIVIDE=Decimal('0.01'), P_BACT_STAY=Decimal('0.2')):
         self.P_BACT_DIVIDE = P_BACT_DIVIDE
         self.P_BACT_STAY = P_BACT_STAY
 

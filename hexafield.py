@@ -27,70 +27,98 @@ import math
 
 class HexCoords(object):
     '''
-    z always equal to -x-y
+    _coords is tuple (x,y). x and y are integers.
+    (z always equal to -x-y)
+    Assumed that HexCoords is immutable.
+    To access coordinate components 'x','y' and 'z' properties could be used.
     '''
-    __slots__ = ['x', 'y']
+    __slots__ = ['_coords']
     
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+    def __init__(self, x, y):
+        self._coords = (x,y)
+    
+    @property
+    def x(self):
+        return self._coords[0]
+    
+    @property
+    def y(self):
+        return self._coords[1]
+    
+    @property
+    def z(self):
+        return -self._coords[0]-self._coords[1]
         
-    def shift(self, dx=0, dy=0):
-        '''
-        Returns shifted HexCoords
-        '''
-        return HexCoords(self.x+dx, self.y+dy)
-    
     def __eq__(self, other):
         if isinstance(other, HexCoords):
-            return self.x==other.x and self.y==other.y
+            return self._coords == other._coords
         return False
         
     def __hash__(self):
-        return hash((self.x,self.y))
+        return hash(self._coords)
     
     def __repr__(self):
         return 'HexCoords(x=%s, y=%s)' % (self.x, self.y)
 
 
+def make_hex_coords(x=None, y=None, z=None, base=HexCoords(0,0)):
+    '''
+    Makes HexCoords using any two of three coordinates and shift them corresponding to base.
+    (Two of coordinates MUST be specified)
+    '''
+    if x is None:
+        x = -y-z
+    elif y is None:
+        y = -x-z
+    return HexCoords(base.x+x,base.y+y)
+
+
 class HexafieldBase(object):
     '''
     Describes hexagonal field.
-    field is dictionary where keys are HexCoords and values are any objects
-    (None by default)
+    _field is set of HexCoords 
     '''
-    __slots__ = ['field']
+    __slots__ = ['_field']
     
     def __init__(self, field):
-        self.field = field
+        self._field = field
     
     def get_neighbours(self, hexCoords, radius = 1):
         '''
-        Returns list of tuples (HexCoords, object) of all cells close to hexCoords
+        Returns set of HexCoords of all cells close to hexCoords
         in given radius (excluding hexCoords itself)
+        TODO: consider optimizations (loop ranges are excessive)
         '''
-        res = []
+        res = set()
         for dx in range(-radius, radius+1):
             for dy in range (-radius, radius+1):
                 if abs(dx+dy)<=radius and abs(dx)+abs(dy)>0:
                     hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
-                    if hc in self.field:
-                        res.append((hc,self.field[hc]))
+                    if hc in self._field:
+                        res.add(hc)
         return res
     
     def get_at_exact_range(self, hexCoords, radius = 1):
         '''
-        Returns list of tuples (HexCoords, object) of all cells located at
+        Returns set of HexCoords of all cells located at
         exact radius from hexCoords
-        TODO: need optimizations - its not good to iterate through such big area
         '''
-        res = []
-        for dx in range(-radius, radius+1):
-            for dy in range (-radius, radius+1):
-                if abs(dx+dy) + abs(dx) + abs(dy)==2*radius:
-                    hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
-                    if hc in self.field:
-                        res.append((hc,self.field[hc]))
+        res = set()
+        for y in range(radius):
+            hc = make_hex_coords(x=radius, y=-y, base=hexCoords)
+            if hc in self._field: res.add(hc)
+            hc = make_hex_coords(x=-radius, y=y, base=hexCoords)
+            if hc in self._field: res.add(hc)
+        for z in range(radius): 
+            hc = make_hex_coords(y=radius, z=-z, base=hexCoords)
+            if hc in self._field: res.add(hc)
+            hc = make_hex_coords(y=-radius, z=z, base=hexCoords)
+            if hc in self._field: res.add(hc)
+        for x in range(radius): 
+            hc = make_hex_coords(z=radius, x=-x, base=hexCoords)
+            if hc in self._field: res.add(hc)
+            hc = make_hex_coords(z=-radius, x=x, base=hexCoords)
+            if hc in self._field: res.add(hc)
         return res
 
 
@@ -100,11 +128,11 @@ class CircleHexafield(HexafieldBase):
     '''
     __slots__ = []
     def __init__(self, fieldRadius = 2):
-        field = {}
+        field = set()
         for x in range(-fieldRadius, fieldRadius+1):
             for y in range(-fieldRadius, fieldRadius+1):
                 if abs(x+y)<=fieldRadius:
-                    field[HexCoords(x,y)] = None
+                    field.add(HexCoords(x,y))
         HexafieldBase.__init__(self,field)
     
 
@@ -154,9 +182,9 @@ class HexCoordConverter(object):
         '''
         returns HexCoords which contains (left,top) plain point
         '''
-        hexCoords = HexCoords(x = round((left - self.leftHex0)/(1.5*self.hexRadius)))
-        hexCoords.y = round( (top-self.topHex0+hexCoords.x*self.hexHeight)/(-2.0*self.hexHeight) )
-        return hexCoords
+        x = round((left - self.leftHex0)/(1.5*self.hexRadius))
+        y = round( (top-self.topHex0+x*self.hexHeight)/(-2.0*self.hexHeight) )
+        return HexCoords(x,y)
     
     def get_hex_vertices(self, hexCoords):
         '''
@@ -226,9 +254,9 @@ if __name__=='__main__':
         
         def test_initialization(self):
             hf = CircleHexafield(1)
-            self.assertEqual(len(hf.field),7)
+            self.assertEqual(len(hf._field),7)
             hf = CircleHexafield(2)
-            self.assertEqual(len(hf.field),19)
+            self.assertEqual(len(hf._field),19)
             
         def test_get_neighbours(self):
             hf = CircleHexafield(2)
@@ -236,9 +264,9 @@ if __name__=='__main__':
             self.assertEqual(len(nb),6)
             nb = hf.get_neighbours(HexCoords(0,2))
             self.assertEqual(len(nb),3)
-            self.assertTrue( (HexCoords(-1,2), None) in nb)
-            self.assertTrue( (HexCoords(0,1), None) in nb)
-            self.assertTrue( (HexCoords(1,1), None) in nb)
+            self.assertTrue( HexCoords(-1,2) in nb)
+            self.assertTrue( HexCoords(0,1) in nb)
+            self.assertTrue( HexCoords(1,1) in nb)
             nb = hf.get_neighbours(HexCoords(0,2),2)
             self.assertEqual(len(nb),8)
             
@@ -246,16 +274,16 @@ if __name__=='__main__':
             hf = CircleHexafield(2)
             nb = hf.get_at_exact_range(HexCoords(0,2))
             self.assertEqual(len(nb),3)
-            self.assertTrue( (HexCoords(-1,2), None) in nb)
-            self.assertTrue( (HexCoords(0,1), None) in nb)
-            self.assertTrue( (HexCoords(1,1), None) in nb)
+            self.assertTrue( HexCoords(-1,2) in nb)
+            self.assertTrue( HexCoords(0,1) in nb)
+            self.assertTrue( HexCoords(1,1) in nb)
             nb = hf.get_at_exact_range(HexCoords(0,2),2)
             self.assertEqual(len(nb),5)
-            self.assertTrue( (HexCoords(-2,2), None) in nb)
-            self.assertTrue( (HexCoords(-1,1), None) in nb)
-            self.assertTrue( (HexCoords(0,0), None) in nb)
-            self.assertTrue( (HexCoords(1,0), None) in nb)
-            self.assertTrue( (HexCoords(2,0), None) in nb)
+            self.assertTrue( HexCoords(-2,2) in nb)
+            self.assertTrue( HexCoords(-1,1) in nb)
+            self.assertTrue( HexCoords(0,0) in nb)
+            self.assertTrue( HexCoords(1,0) in nb)
+            self.assertTrue( HexCoords(2,0) in nb)
 
     
     unittest.main()

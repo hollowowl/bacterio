@@ -20,14 +20,3 @@ class Predator(object):
     
     def __init__(self):
         pass
-
-
-class CellData(object):
-    '''
-    Stores data of a single cell on a field
-    '''
-    __slots__ = ['predators', 'bacteria']
-    
-    def __init__(self, predators=[], bacteria=[]):
-        self.predators = predators
-        self.bacteria = bacteria
