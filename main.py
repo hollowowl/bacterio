@@ -17,8 +17,8 @@ COL_BASIC = 'green' # for all hexagons except those in sight range 2
 COL_BACT = 'dim gray'
 COL_PR = 'red'
 COL_BACT_PR = 'brown'
-FIELD_RADIUS = 10  # field radius in hexagons
-NUM_BACT = 15
+FIELD_RADIUS = 20  # field radius in hexagons
+NUM_BACT = 30
 NUM_PR = 7
 
 
@@ -38,12 +38,14 @@ class MainWindow(object):
         self.conv = hexafield.HexCoordConverter( leftHex0=width/2, topHex0=height/2, hexRadius = min(maxHexRadius, hexRadius) )
         self.canvas = Canvas(self.tk, width=width, height=height, bg=COL_BG)
         self.canvas.pack()
-        self.model = model.CoreModel(model_params.ModelParams(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
+        self.model = model.CoreModel(model_params.default_model_params(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
         self.displayCoords = self.canvas.create_text(width-200,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
         self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
         self.draw_field()
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
-        self.tk.bind('<space>', lambda evt: self.step())
+        self.tk.bind('<space>', lambda evt: self.stop_play_or_step())
+        self.tk.bind('r', lambda evt: self.start_play())
+        self.play = False
         
     def draw_field(self): 
         self.canvas.delete('field')
@@ -70,14 +72,29 @@ class MainWindow(object):
             if hexCoords in self.model.bacteriaPositions:
                 numBacteria = len(self.model.bacteriaPositions[hexCoords])
             numPredators = 0
+            prEnergy = ''
             if hexCoords in self.model.predatorPositions:
                 numPredators = len(self.model.predatorPositions[hexCoords])
-            self.canvas.itemconfigure(self.displayCoords, text="x=%d, y=%d, z=%d\nBacteria: %d\nPredators: %d" 
-                % (hexCoords.x, hexCoords.y, -hexCoords.x-hexCoords.y, numBacteria, numPredators) )
+                prEnergy = str([x.energy for x in self.model.predatorPositions[hexCoords]])
+            self.canvas.itemconfigure(self.displayCoords, text="x=%d, y=%d, z=%d\nBacteria: %d\nPredators: %d %s" 
+                % (hexCoords.x, hexCoords.y, -hexCoords.x-hexCoords.y, numBacteria, numPredators, prEnergy) )
     
+    
+    def stop_play_or_step(self):
+        if self.play:
+            self.play = False
+        else:
+            self.step()
+        
+    def start_play(self):
+        self.play = True
+        self.step()
+        
     def step(self):
         self.model.step()
         self.draw_field()
+        if self.play:
+            self.tk.after(25,self.step)
         
        
 if __name__=='__main__':

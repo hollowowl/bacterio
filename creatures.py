@@ -6,7 +6,7 @@ class Bacteria(object):
     '''
     Stores parameters of a single bacteria
     '''
-    __slots__ = []
+    __slots__ = ()
     
     def __init__(self):
         pass
@@ -14,9 +14,10 @@ class Bacteria(object):
 
 class Predator(object):
     '''
-    Stores parameters of a single predator
+    Stores parameters of a single predator.
+    Predator loses energy each turn. When energy if <=0, predator dies.
     '''
-    __slots__ = []
+    __slots__ = ('energy')
     
-    def __init__(self):
-        pass
+    def __init__(self, energy):
+        self.energy = energy

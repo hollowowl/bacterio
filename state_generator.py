@@ -8,8 +8,9 @@ import hexafield
 from hexafield import CircleHexafield
 from creatures import Predator, Bacteria
 from state import BacterioState
+import model_params
 
-def generate_state(fieldRadius, numBacteria, numPredators):
+def generate_state(fieldRadius, numBacteria, numPredators, modelParams = model_params.default_model_params()):
     '''
     Generates initial state on CircleHexafield with given fieldRadius.
     Each object placed on different cell. If there are more objects (numBacteria+numPredators) than
@@ -29,7 +30,7 @@ def generate_state(fieldRadius, numBacteria, numPredators):
         
     for i in range(numPredators):
         hc = random.choice(unoccupiedCells)
-        predatorPositions[hc] = [Predator()]
+        predatorPositions[hc] = [Predator(modelParams.PR_INIT_ENERGY)]
         unoccupiedCells.remove(hc)
         if len(unoccupiedCells)==0:
             return BacterioState(field, bacteriaPositions, predatorPositions)
