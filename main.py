@@ -40,6 +40,10 @@ class MainWindow(object):
         self.model = model.CoreModel(model_params.default_model_params(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
         self.displayCoords = self.canvas.create_text(width-200,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
         self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
+        self.currentStep = 0
+        self.haltReason = ''
+        self.numBacteria = self.model.count_bacteria()
+        self.numPredators = self.model.count_predators()
         self.draw_field()
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
         self.init_menu()
@@ -81,8 +85,8 @@ class MainWindow(object):
             self.canvas.create_polygon(self.conv.get_hex_vertices(hc),
                 outline=COL_BASIC, fill=fill, width=2, tag='field')
         self.currHexCoords = None
-        self.canvas.itemconfigure(self.displayTotal, text="Total\nBacteria: %d\nPredators: %d" 
-                % (self.model.count_bacteria(), self.model.count_predators()) )
+        self.canvas.itemconfigure(self.displayTotal, text="Step %d\nBacteria: %d\nPredators: %d\n%s" 
+                % (self.currentStep, self.numBacteria, self.numPredators, self.haltReason) )
 
     def on_canvas_mouse_move(self, event):
         hexCoords = self.conv.plain_to_hex(event.x,event.y)
@@ -110,9 +114,23 @@ class MainWindow(object):
         
     def step(self):
         self.model.step()
+        self.currentStep+=1
+        self.numBacteria = self.model.count_bacteria()
+        self.numPredators = self.model.count_predators()
+        if self.check_for_halt():
+            self.play = False
         self.draw_field()
         if self.play:
             self.tk.after(25,self.step)
+    
+    def check_for_halt(self):
+        if self.numPredators==0:
+            self.haltReason = 'No more predators left'
+            return True
+        if self.numBacteria==0:
+            self.haltReason = 'No more bacteria left'
+            return True
+        return False
     
     def open_state(self):
         pass

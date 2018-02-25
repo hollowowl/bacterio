@@ -88,42 +88,6 @@ class CoreModel(object):
                             newPredatorPositions[newPos].append(pr)
         self.predatorPositions = newPredatorPositions
 
-                    
-                    
-                    # ~ # HUNGRY
-                    # ~ # (Now PR_SIGHT is ignored)
-                    # ~ if hc in self.bacteriaPositions:
-                        # ~ # FEED IN PLACE
-                        # ~ if not hc in newPredatorPositions:
-                            # ~ newPredatorPositions[hc] = []
-                        # ~ newPredatorPositions[hc].append(pr)
-                        # ~ self.bacteriaPositions[hc].pop()
-                        # ~ if len(self.bacteriaPositions[hc])==0:
-                            # ~ self.bacteriaPositions.pop(hc)
-                        # ~ pr.energy+=self.modelParams.PR_FEED_VALUE
-                    # ~ else:
-                        # ~ neighbours = self.field.get_neighbours(hc)
-                        # ~ feed = False
-                        # ~ for nb in neighbours:
-                            # ~ if nb in self.bacteriaPositions:
-                                # ~ # FEED
-                                # ~ if not nb in newPredatorPositions:
-                                    # ~ newPredatorPositions[nb] = []
-                                # ~ newPredatorPositions[nb].append(pr)
-                                # ~ self.bacteriaPositions[nb].pop()
-                                # ~ if len(self.bacteriaPositions[nb])==0:
-                                    # ~ self.bacteriaPositions.pop(nb)
-                                # ~ pr.energy+=self.modelParams.PR_FEED_VALUE
-                                # ~ feed = True
-                                # ~ break
-                        # ~ if not feed:
-                            # ~ pr.energy-=self.modelParams.PR_TURN_COST
-                            # ~ if pr.energy>0:
-                                # ~ newPos = random.choice(list(neighbours))
-                                # ~ if not newPos in newPredatorPositions:
-                                    # ~ newPredatorPositions[newPos] = []
-                                # ~ newPredatorPositions[newPos].append(pr)
-    
     def step_bacteria(self):
         newBacteriaPositions = dict()
         for hc in self.bacteriaPositions:

@@ -12,7 +12,7 @@ PR_DIVIDE_ENERGY - minimal energy value at which predator's divide is possible. 
 PR_DIVIDE_COST - energy cost of predator's division
 PR_TURN_COST - energy cost of each predator's turn (except division or feed)
 PR_FEED_VALUE - energy gained by predator after successful hunting
-PR_SIGHT = predator's sight range
+PR_SIGHT - predator's sight range
 P_PR_DIVIDE - probability of predator's division (if its energy>=PR_DIVIDE_ENERGY)
 P_PR_STAY - probability that predator remain still if he is fed up (energy>=PR_MAX_ENERGY)
 PR_OVERCROWD - number of maximum number of predators within PR_OVERCROWD_RADIUS (if more or equal, predator will not divide)
@@ -42,13 +42,13 @@ ModelParams = namedtuple('ModelParams', ['P_BACT_DIVIDE',
 
 def default_model_params():
     return ModelParams(
-            P_BACT_DIVIDE=Decimal('0.2'), 
+            P_BACT_DIVIDE=Decimal('0.1'), 
             P_BACT_STAY=Decimal('0.05'),
             BACT_OVERCROWD=2,
             BACT_OVERCROWD_RADIUS=1,
-            PR_INIT_ENERGY=20,
-            PR_MAX_ENERGY=25,
-            PR_DIVIDE_ENERGY=24,
+            PR_INIT_ENERGY=10,
+            PR_MAX_ENERGY=15,
+            PR_DIVIDE_ENERGY=12,
             PR_DIVIDE_COST=0,
             PR_TURN_COST=1,
             PR_FEED_VALUE=5,
@@ -56,5 +56,5 @@ def default_model_params():
             P_PR_DIVIDE=Decimal('0.5'),
             P_PR_STAY=Decimal('0.8'),
             PR_OVERCROWD=2,
-            PR_OVERCROWD_RADIUS=5)
+            PR_OVERCROWD_RADIUS=6)
             
