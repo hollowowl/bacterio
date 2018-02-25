@@ -9,18 +9,11 @@ from hexafield import HexCoords
 import model
 import model_params
 import state_generator
+import palette
 
-
-COL_BG = 'black'
-COL_TEXT = 'green'
-COL_BASIC = 'green' # for all hexagons except those in sight range 2
-COL_BACT = 'dim gray'
-COL_PR = 'red'
-COL_BACT_PR = 'brown'
 FIELD_RADIUS = 20  # field radius in hexagons
-NUM_BACT = 30
-NUM_PR = 7
-
+NUM_BACT = 60
+NUM_PR = 15
 
 class MainWindow(object):
     """
@@ -35,11 +28,12 @@ class MainWindow(object):
         self.tk = tk
         maxHexRadius = min( width/(2.0*(2.0*FIELD_RADIUS+1)), height/(2.0*hexafield.SQRT3D2*(2.0*FIELD_RADIUS+1)) )
         self.conv = hexafield.HexCoordConverter( leftHex0=width/2, topHex0=height/2, hexRadius = min(maxHexRadius, hexRadius) )
-        self.canvas = Canvas(self.tk, width=width, height=height, bg=COL_BG)
+        self.palette = palette.default_palette()
+        self.canvas = Canvas(self.tk, width=width, height=height, bg=self.palette.background)
         self.canvas.pack()
         self.model = model.CoreModel(model_params.default_model_params(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
-        self.displayCoords = self.canvas.create_text(width-200,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
-        self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
+        self.displayCoords = self.canvas.create_text(width-200,height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
+        self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.currentStep = 0
         self.haltReason = ''
         self.numBacteria = self.model.count_bacteria()
@@ -77,13 +71,13 @@ class MainWindow(object):
             fill = None
             if hc in self.model.bacteriaPositions:
                 if hc in self.model.predatorPositions:
-                    fill = COL_BACT_PR
+                    fill = self.palette.both
                 else:
-                    fill = COL_BACT
+                    fill = self.palette.bacteria
             elif hc in self.model.predatorPositions:
-                fill = COL_PR 
+                fill = self.palette.predator
             self.canvas.create_polygon(self.conv.get_hex_vertices(hc),
-                outline=COL_BASIC, fill=fill, width=2, tag='field')
+                outline=self.palette.grid, fill=fill, width=2, tag='field')
         self.currHexCoords = None
         self.canvas.itemconfigure(self.displayTotal, text="Step %d\nBacteria: %d\nPredators: %d\n%s" 
                 % (self.currentStep, self.numBacteria, self.numPredators, self.haltReason) )
