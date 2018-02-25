@@ -4,6 +4,7 @@ Describes core model of bacterio
 
 import random
 
+import hexafield
 from hexafield import HexCoords
 from creatures import Predator, Bacteria
 from rand_p import rand_p
@@ -67,39 +68,61 @@ class CoreModel(object):
                     pr.energy-=self.modelParams.PR_TURN_COST
                 else:
                     # HUNGRY
-                    # (Now PR_SIGHT is ignored)
-                    if hc in self.bacteriaPositions:
-                        # FEED IN PLACE
-                        if not hc in newPredatorPositions:
-                            newPredatorPositions[hc] = []
-                        newPredatorPositions[hc].append(pr)
-                        self.bacteriaPositions[hc].pop()
-                        if len(self.bacteriaPositions[hc])==0:
-                            self.bacteriaPositions.pop(hc)
-                        pr.energy+=self.modelParams.PR_FEED_VALUE
-                    else:
-                        neighbours = self.field.get_neighbours(hc)
-                        feed = False
-                        for nb in neighbours:
-                            if nb in self.bacteriaPositions:
-                                # FEED
-                                if not nb in newPredatorPositions:
-                                    newPredatorPositions[nb] = []
-                                newPredatorPositions[nb].append(pr)
-                                self.bacteriaPositions[nb].pop()
-                                if len(self.bacteriaPositions[nb])==0:
-                                    self.bacteriaPositions.pop(nb)
+                    pr.energy-=self.modelParams.PR_TURN_COST
+                    if pr.energy>0:
+                        closestBact = self.find_closest_bacteria(hc)
+                        if closestBact is not None:
+                            newPos = hexafield.get_step_to(hc, closestBact)
+                            if not newPos in newPredatorPositions:
+                                newPredatorPositions[newPos] = []
+                            newPredatorPositions[newPos].append(pr)
+                            if newPos in self.bacteriaPositions:
+                                self.bacteriaPositions[newPos].pop()
+                                if len(self.bacteriaPositions[newPos])==0:
+                                    self.bacteriaPositions.pop(newPos)
                                 pr.energy+=self.modelParams.PR_FEED_VALUE
-                                feed = True
-                                break
-                        if not feed:
-                            pr.energy-=self.modelParams.PR_TURN_COST
-                            if pr.energy>0:
-                                newPos = random.choice(list(neighbours))
-                                if not newPos in newPredatorPositions:
-                                    newPredatorPositions[newPos] = []
-                                newPredatorPositions[newPos].append(pr)
+                        else: #if closestBact is None
+                            newPos = random.choice(list(self.field.get_neighbours(hc)))
+                            if not newPos in newPredatorPositions:
+                                newPredatorPositions[newPos] = []
+                            newPredatorPositions[newPos].append(pr)
         self.predatorPositions = newPredatorPositions
+
+                    
+                    
+                    # ~ # HUNGRY
+                    # ~ # (Now PR_SIGHT is ignored)
+                    # ~ if hc in self.bacteriaPositions:
+                        # ~ # FEED IN PLACE
+                        # ~ if not hc in newPredatorPositions:
+                            # ~ newPredatorPositions[hc] = []
+                        # ~ newPredatorPositions[hc].append(pr)
+                        # ~ self.bacteriaPositions[hc].pop()
+                        # ~ if len(self.bacteriaPositions[hc])==0:
+                            # ~ self.bacteriaPositions.pop(hc)
+                        # ~ pr.energy+=self.modelParams.PR_FEED_VALUE
+                    # ~ else:
+                        # ~ neighbours = self.field.get_neighbours(hc)
+                        # ~ feed = False
+                        # ~ for nb in neighbours:
+                            # ~ if nb in self.bacteriaPositions:
+                                # ~ # FEED
+                                # ~ if not nb in newPredatorPositions:
+                                    # ~ newPredatorPositions[nb] = []
+                                # ~ newPredatorPositions[nb].append(pr)
+                                # ~ self.bacteriaPositions[nb].pop()
+                                # ~ if len(self.bacteriaPositions[nb])==0:
+                                    # ~ self.bacteriaPositions.pop(nb)
+                                # ~ pr.energy+=self.modelParams.PR_FEED_VALUE
+                                # ~ feed = True
+                                # ~ break
+                        # ~ if not feed:
+                            # ~ pr.energy-=self.modelParams.PR_TURN_COST
+                            # ~ if pr.energy>0:
+                                # ~ newPos = random.choice(list(neighbours))
+                                # ~ if not newPos in newPredatorPositions:
+                                    # ~ newPredatorPositions[newPos] = []
+                                # ~ newPredatorPositions[newPos].append(pr)
     
     def step_bacteria(self):
         newBacteriaPositions = dict()
@@ -164,5 +187,16 @@ class CoreModel(object):
                 res+=len(self.predatorPositions[hc])
         return res<self.modelParams.PR_OVERCROWD
     
-                
+    def find_closest_bacteria(self, hexCoords):
+        '''
+        Returns position of the closest bacteria within maxRange (or None)
+        '''
+        if hexCoords in self.bacteriaPositions:
+            return hexCoords
+        for r in range(1, self.modelParams.PR_SIGHT+1):
+            cells = self.field.get_at_exact_range(hexCoords, r)
+            for hc in cells:
+                if hc in self.bacteriaPositions:
+                    return hc
+        return None
             

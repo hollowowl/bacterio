@@ -33,7 +33,6 @@ class MainWindow(object):
         hexRadius is (suprisingly) radius of single hexagon
         '''
         self.tk = tk
-        self.tk.bind('<Escape>', lambda evt: self.tk.destroy())
         maxHexRadius = min( width/(2.0*(2.0*FIELD_RADIUS+1)), height/(2.0*hexafield.SQRT3D2*(2.0*FIELD_RADIUS+1)) )
         self.conv = hexafield.HexCoordConverter( leftHex0=width/2, topHex0=height/2, hexRadius = min(maxHexRadius, hexRadius) )
         self.canvas = Canvas(self.tk, width=width, height=height, bg=COL_BG)
@@ -43,10 +42,31 @@ class MainWindow(object):
         self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=COL_TEXT,font='Consolas 14 bold', text="")
         self.draw_field()
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
-        self.tk.bind('<space>', lambda evt: self.stop_play_or_step())
-        self.tk.bind('r', lambda evt: self.start_play())
+        self.init_menu()
         self.play = False
-        
+    
+    def init_menu(self):
+        """
+        Initialize menu and bind hotkeys
+        """
+        mRoot = Menu(self.tk)
+        self.tk.config(menu=mRoot)
+        mFile = Menu(mRoot)
+        mFile.add_command(label="Open state", underline=0, command=self.open_state, accelerator="Ctrl+O")
+        self.tk.bind('<Control-o>', lambda evt: self.open_state())
+        mFile.add_command(label="Save state", underline=0, command=self.save_state, accelerator="Ctrl+S")
+        self.tk.bind('<Control-s>', lambda evt: self.save_state())
+        mFile.add_separator()
+        mFile.add_command(label="Exit", underline=1, command=self.tk.destroy, accelerator="Esc")
+        self.tk.bind('<Escape>', lambda evt: self.tk.destroy())
+        mRoot.add_cascade(label="File", underline=0, menu=mFile)
+        mProcess = Menu(mRoot)
+        mProcess.add_command(label="Step/Stop play", underline=0, command=self.stop_play_or_step, accelerator="Space")
+        self.tk.bind('<space>', lambda evt: self.stop_play_or_step())
+        mProcess.add_command(label="Play...", underline=0, command=self.start_play, accelerator="R")
+        self.tk.bind('r', lambda evt: self.start_play())
+        mRoot.add_cascade(label="Process", underline=0, menu=mProcess)
+    
     def draw_field(self): 
         self.canvas.delete('field')
         for hc in self.model.field._field:
@@ -75,7 +95,7 @@ class MainWindow(object):
             if hexCoords in self.model.predatorPositions:
                 numPredators = len(self.model.predatorPositions[hexCoords])
                 prEnergy = str([x.energy for x in self.model.predatorPositions[hexCoords]])
-            self.canvas.itemconfigure(self.displayCoords, text="x=%d, y=%d, z=%d\nBacteria: %d\nPredators: %d %s" 
+            self.canvas.itemconfigure(self.displayCoords, text="x=%d, y=%d, z=%d\nBacteria: %d\nPredators: %d\n%s" 
                 % (hexCoords.x, hexCoords.y, -hexCoords.x-hexCoords.y, numBacteria, numPredators, prEnergy) )
     
     def stop_play_or_step(self):
@@ -93,7 +113,12 @@ class MainWindow(object):
         self.draw_field()
         if self.play:
             self.tk.after(25,self.step)
+    
+    def open_state(self):
+        pass
         
+    def save_state(self):
+        pass
        
 if __name__=='__main__':
     root = Tk()

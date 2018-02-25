@@ -42,19 +42,19 @@ ModelParams = namedtuple('ModelParams', ['P_BACT_DIVIDE',
 
 def default_model_params():
     return ModelParams(
-            P_BACT_DIVIDE=Decimal('0.1'), 
-            P_BACT_STAY=Decimal('0.2'),
+            P_BACT_DIVIDE=Decimal('0.2'), 
+            P_BACT_STAY=Decimal('0.05'),
             BACT_OVERCROWD=2,
             BACT_OVERCROWD_RADIUS=1,
             PR_INIT_ENERGY=20,
-            PR_MAX_ENERGY=30,
-            PR_DIVIDE_ENERGY=29,
+            PR_MAX_ENERGY=25,
+            PR_DIVIDE_ENERGY=24,
             PR_DIVIDE_COST=0,
             PR_TURN_COST=1,
-            PR_FEED_VALUE=10,
-            PR_SIGHT=2,
-            P_PR_DIVIDE=Decimal('0.2'),
+            PR_FEED_VALUE=5,
+            PR_SIGHT=4,
+            P_PR_DIVIDE=Decimal('0.5'),
             P_PR_STAY=Decimal('0.8'),
             PR_OVERCROWD=2,
-            PR_OVERCROWD_RADIUS=3)
+            PR_OVERCROWD_RADIUS=5)
             

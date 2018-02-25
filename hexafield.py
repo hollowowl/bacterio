@@ -73,6 +73,46 @@ def make_hex_coords(x=None, y=None, z=None, base=HexCoords(0,0)):
     return HexCoords(base.x+x,base.y+y)
 
 
+def get_distance_between(hcFrom, hcTo):
+    '''
+    Returns distance (in cells) between hcFrom and hcTo.
+    If hcFrom==hcTo, returns 0.
+    '''
+    return (abs(hcTo.x-hcFrom.x)+abs(hcTo.y-hcFrom.y)+abs(hcTo.z-hcFrom.z))//2
+
+
+sign = lambda x: (1, -1)[x < 0]  # useful 'sign' one liner
+
+def get_step_to(hcFrom, hcTo):
+    '''
+    Returns HexCoords of hcFrom heighbour that is the closest on
+    to hcTo.
+    (In other words, if we want to get the shortest path from hcFrom to
+    hcTo, the result of this method will be the first point of that trajectory)
+    '''
+    if hcFrom==hcTo:
+        return hcTo
+    dx = hcTo.x - hcFrom.x
+    dy = hcTo.y - hcFrom.y
+    dz = hcTo.z - hcFrom.z
+    dr = [abs(dx), abs(dy), abs(dz)]
+    drMax = max(dr) 
+    if drMax==1:
+        return hcTo
+    if dx==0:
+        return make_hex_coords(x=0, y=sign(dy), base=hcFrom)
+    if dy==0:
+        return make_hex_coords(y=0, x=sign(dx), base=hcFrom)
+    if dz==0:
+        return make_hex_coords(z=0, x=sign(dx), base=hcFrom)
+    maxIndex = dr.index(drMax)
+    if maxIndex==0:
+        return make_hex_coords(x=sign(dx), y=-sign(dx), base=hcFrom)
+    if maxIndex==1:
+        return make_hex_coords(y=sign(dy), z=-sign(dy), base=hcFrom)
+    return make_hex_coords(z=sign(dz), x=-sign(dz), base=hcFrom)
+    
+
 class HexafieldBase(object):
     '''
     Describes hexagonal field.
@@ -136,7 +176,7 @@ class HexafieldBase(object):
             hc = make_hex_coords(z=-radius, x=x, base=hexCoords)
             if hc in self._field: res.add(hc)
         return res
-
+    
 
 class CircleHexafield(HexafieldBase):
     '''
@@ -244,7 +284,38 @@ if __name__=='__main__':
             self.assertFalse(hc1==hc4)
             self.assertFalse(hc1==hc5)
             self.assertFalse(hc1==None)
-    
+        
+        def test_get_distance_between(self):
+            self.assertEqual(get_distance_between(HexCoords(1,1),HexCoords(1,1)),0)
+            hc1 = HexCoords(0,-1)
+            hc2 = HexCoords(-1,2)
+            self.assertEqual(get_distance_between(hc1,hc2), 3)
+            self.assertEqual(get_distance_between(hc2,hc1), 3)
+            hc1 = HexCoords(1,-2)
+            hc2 = HexCoords(2,-1)
+            self.assertEqual(get_distance_between(hc1,hc2), 2)
+            self.assertEqual(get_distance_between(hc2,hc1), 2)
+            
+        def test_get_step_to(self):
+            self.assertEqual(get_step_to(HexCoords(1,1),HexCoords(1,1)),HexCoords(1,1))
+            # neighbours
+            hc1 = HexCoords(0,-1)
+            hc2 = HexCoords(1,-2)
+            self.assertEqual(get_step_to(hc1,hc2),hc2)
+            self.assertEqual(get_step_to(hc2,hc1),hc1)
+            # far away
+            hc1 = HexCoords(-1,-1)
+            hc2 = HexCoords(2,-1)
+            self.assertEqual(get_step_to(hc1,hc2),HexCoords(0,-1))
+            hc1 = HexCoords(-2,2)
+            hc2 = HexCoords(2,-2)
+            self.assertEqual(get_step_to(hc1,hc2),HexCoords(-1,1))
+            # two possible results
+            hc1 = HexCoords(0,-1)
+            hc2 = HexCoords(1,0)
+            hc = get_step_to(hc1,hc2)
+            self.assertTrue(hc==HexCoords(0,0) or hc==HexCoords(1,-1))
+            
     
     class TestHexCoordConverter(unittest.TestCase):
     
