@@ -15,6 +15,9 @@ FIELD_RADIUS = 20  # field radius in hexagons
 NUM_BACT = 60
 NUM_PR = 15
 
+DEFAULT_PALETTE_FILE = 'palette.ini'
+DEFAULT_CONFIG_FILE = 'config.ini'
+
 class MainWindow(object):
     """
     Represents main application window
@@ -28,7 +31,7 @@ class MainWindow(object):
         self.tk = tk
         maxHexRadius = min( width/(2.0*(2.0*FIELD_RADIUS+1)), height/(2.0*hexafield.SQRT3D2*(2.0*FIELD_RADIUS+1)) )
         self.conv = hexafield.HexCoordConverter( leftHex0=width/2, topHex0=height/2, hexRadius = min(maxHexRadius, hexRadius) )
-        self.palette = palette.default_palette()
+        self.palette = palette.load_palette(DEFAULT_PALETTE_FILE)
         self.canvas = Canvas(self.tk, width=width, height=height, bg=self.palette.background)
         self.canvas.pack()
         self.model = model.CoreModel(model_params.default_model_params(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
@@ -68,7 +71,7 @@ class MainWindow(object):
     def draw_field(self): 
         self.canvas.delete('field')
         for hc in self.model.field._field:
-            fill = None
+            fill = ''
             if hc in self.model.bacteriaPositions:
                 if hc in self.model.predatorPositions:
                     fill = self.palette.both
