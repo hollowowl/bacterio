@@ -125,56 +125,51 @@ class HexafieldBase(object):
     
     def get_neighbours(self, hexCoords, radius = 1):
         '''
-        Returns set of HexCoords of all cells close to hexCoords
+        Returns list of HexCoords of all cells close to hexCoords
         in given radius (excluding hexCoords itself)
-        (Remark 'bout excessive loops - timeit measures shows quite similar results for this version and
-            for r in range(radius):
-                res |= self.get_at_exact_range(hexCoords, r+1)
-        one.)
         '''
-        res = set()
+        res = []
         for dx in range(-radius, radius+1):
-            for dy in range (-radius, radius+1):
-                if abs(dx+dy)<=radius and abs(dx)+abs(dy)>0:
+            for dy in range(max(-radius,-dx-radius), min(radius,radius-dx)+1):
+                if dx!=0 or dy!=0:
                     hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
                     if hc in self._field:
-                        res.add(hc)
+                        res.append(hc)
         return res
     
     def get_all_within(self, hexCoords, radius):
         '''
-        Returns set of HexCoords of all cells within the given radius
+        Returns list of HexCoords of all cells within the given radius
         '''
-        res = set()
+        res = []
         for dx in range(-radius, radius+1):
-            for dy in range (-radius, radius+1):
-                if abs(dx+dy)<=radius:
-                    hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
-                    if hc in self._field:
-                        res.add(hc)
+            for dy in range(max(-radius,-dx-radius), min(radius,radius-dx)+1):
+                hc = HexCoords(hexCoords.x+dx, hexCoords.y+dy)
+                if hc in self._field:
+                    res.append(hc)
         return res
         
     def get_at_exact_range(self, hexCoords, radius = 1):
         '''
-        Returns set of HexCoords of all cells located at
+        Returns list of HexCoords of all cells located at
         exact radius from hexCoords
         '''
-        res = set()
+        res = []
         for y in range(radius):
             hc = make_hex_coords(x=radius, y=-y, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
             hc = make_hex_coords(x=-radius, y=y, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
         for z in range(radius): 
             hc = make_hex_coords(y=radius, z=-z, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
             hc = make_hex_coords(y=-radius, z=z, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
         for x in range(radius): 
             hc = make_hex_coords(z=radius, x=-x, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
             hc = make_hex_coords(z=-radius, x=x, base=hexCoords)
-            if hc in self._field: res.add(hc)
+            if hc in self._field: res.append(hc)
         return res
     
 
@@ -186,9 +181,8 @@ class CircleHexafield(HexafieldBase):
     def __init__(self, fieldRadius = 2):
         field = set()
         for x in range(-fieldRadius, fieldRadius+1):
-            for y in range(-fieldRadius, fieldRadius+1):
-                if abs(x+y)<=fieldRadius:
-                    field.add(HexCoords(x,y))
+            for y in range(max(-fieldRadius,-x-fieldRadius), min(fieldRadius,fieldRadius-x)+1):
+                field.add(HexCoords(x,y))
         HexafieldBase.__init__(self,field)
     
 

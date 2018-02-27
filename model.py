@@ -61,7 +61,7 @@ class CoreModel(object):
                             newPredatorPositions[hc] = []
                         newPredatorPositions[hc].append(pr)
                     else:
-                        newPos = random.choice(list(self.field.get_neighbours(hc)))
+                        newPos = random.choice(self.field.get_neighbours(hc))
                         if not newPos in newPredatorPositions:
                             newPredatorPositions[newPos] = []
                         newPredatorPositions[newPos].append(pr)
@@ -82,7 +82,7 @@ class CoreModel(object):
                                     self.bacteriaPositions.pop(newPos)
                                 pr.energy+=self.modelParams.PR_FEED_VALUE
                         else: #if closestBact is None
-                            newPos = random.choice(list(self.field.get_neighbours(hc)))
+                            newPos = random.choice(self.field.get_neighbours(hc))
                             if not newPos in newPredatorPositions:
                                 newPredatorPositions[newPos] = []
                             newPredatorPositions[newPos].append(pr)
@@ -103,7 +103,7 @@ class CoreModel(object):
                         newBacteriaPositions[hc] = []
                     newBacteriaPositions[hc].append(bact)
                 else:
-                    newPos = random.choice(list(self.field.get_neighbours(hc)))
+                    newPos = random.choice(self.field.get_neighbours(hc))
                     if not newPos in newBacteriaPositions:
                         newBacteriaPositions[newPos] = []
                     newBacteriaPositions[newPos].append(bact)
