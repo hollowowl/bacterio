@@ -10,10 +10,7 @@ import model
 import model_params
 import state_generator
 import palette
-
-FIELD_RADIUS = 20  # field radius in hexagons
-NUM_BACT = 60
-NUM_PR = 15
+import config
 
 DEFAULT_PALETTE_FILE = 'palette.ini'
 DEFAULT_CONFIG_FILE = 'config.ini'
@@ -22,21 +19,20 @@ class MainWindow(object):
     """
     Represents main application window
     """
-    def __init__(self, tk, width=1024, height=768, hexRadius=30):
+    def __init__(self, tk):
         '''
         tk is is Tk object to use for main app window
-        width and height are properties of canvas where field will be placed
-        hexRadius is (suprisingly) radius of single hexagon
         '''
         self.tk = tk
-        maxHexRadius = min( width/(2.0*(2.0*FIELD_RADIUS+1)), height/(2.0*hexafield.SQRT3D2*(2.0*FIELD_RADIUS+1)) )
-        self.conv = hexafield.HexCoordConverter( leftHex0=width/2, topHex0=height/2, hexRadius = min(maxHexRadius, hexRadius) )
+        conf = config.load_config(DEFAULT_CONFIG_FILE)
+        maxHexRadius = min( conf.miscParams.width/(2.0*(2.0*conf.fieldParams.radius+1)), conf.miscParams.height/(2.0*hexafield.SQRT3D2*(2.0*conf.fieldParams.radius+1)) )
+        self.conv = hexafield.HexCoordConverter( leftHex0=conf.miscParams.width/2, topHex0=conf.miscParams.height/2, hexRadius = maxHexRadius )
         self.palette = palette.load_palette(DEFAULT_PALETTE_FILE)
-        self.canvas = Canvas(self.tk, width=width, height=height, bg=self.palette.background)
+        self.canvas = Canvas(self.tk, width=conf.miscParams.width, height=conf.miscParams.height, bg=self.palette.background)
         self.canvas.pack()
-        self.model = model.CoreModel(model_params.default_model_params(), state_generator.generate_state(FIELD_RADIUS,NUM_BACT,NUM_PR))
-        self.displayCoords = self.canvas.create_text(width-200,height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
-        self.displayTotal = self.canvas.create_text(15,height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
+        self.model = model.CoreModel(conf.modelParams, state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams))
+        self.displayCoords = self.canvas.create_text(conf.miscParams.width-200,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
+        self.displayTotal = self.canvas.create_text(15,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.currentStep = 0
         self.haltReason = ''
         self.numBacteria = self.model.count_bacteria()

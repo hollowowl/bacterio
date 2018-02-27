@@ -57,4 +57,26 @@ def default_model_params():
             P_PR_STAY=Decimal('0.8'),
             PR_OVERCROWD=2,
             PR_OVERCROWD_RADIUS=6)
-            
+
+
+def load_model_params(configSection):
+    '''
+    Loads modelParams from given section of INI file (parsed with configparser.ConfigParser)
+    '''
+    return ModelParams(
+            P_BACT_DIVIDE=Decimal(configSection['P_BACT_DIVIDE']), 
+            P_BACT_STAY=Decimal(configSection['P_BACT_DIVIDE']),
+            BACT_OVERCROWD=configSection.getint('BACT_OVERCROWD'),
+            BACT_OVERCROWD_RADIUS=configSection.getint('BACT_OVERCROWD_RADIUS'),
+            PR_INIT_ENERGY=configSection.getint('PR_INIT_ENERGY'),
+            PR_MAX_ENERGY=configSection.getint('PR_MAX_ENERGY'),
+            PR_DIVIDE_ENERGY=configSection.getint('PR_DIVIDE_ENERGY'),
+            PR_DIVIDE_COST=configSection.getint('PR_DIVIDE_COST'),
+            PR_TURN_COST=configSection.getint('PR_TURN_COST'),
+            PR_FEED_VALUE=configSection.getint('PR_FEED_VALUE'),
+            PR_SIGHT=configSection.getint('PR_SIGHT'),
+            P_PR_DIVIDE=Decimal(configSection['P_PR_DIVIDE']),
+            P_PR_STAY=Decimal(configSection['P_PR_STAY']),
+            PR_OVERCROWD=configSection.getint('PR_OVERCROWD'),
+            PR_OVERCROWD_RADIUS=configSection.getint('PR_OVERCROWD_RADIUS'))
+    

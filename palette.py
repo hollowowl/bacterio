@@ -26,7 +26,7 @@ def default_palette():
 def load_palette(fileName):
     '''
     Tries to load palette from given .INI file.
-    If fails, return default_config()
+    If fails return default_palette()
     '''
     config = configparser.ConfigParser()
     config.read(fileName)
