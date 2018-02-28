@@ -9,7 +9,7 @@ import model_params
 
 Config = namedtuple('Config', ['fieldParams', 'modelParams', 'miscParams'])
 FieldParams = namedtuple('FieldParams', ['radius', 'initBacteria', 'initPredators'])
-MiscParams = namedtuple('MiscParams', ['height', 'width'])
+MiscParams = namedtuple('MiscParams', ['height', 'width', 'writeTrace', 'traceFilePrefix'])
 
 def default_field_params():
     return FieldParams(
@@ -21,7 +21,9 @@ def default_field_params():
 def default_misc_params():
     return MiscParams(
             height = 768,
-            width = 1024)
+            width = 1024,
+            writeTrace = False,
+            traceFilePrefix = None)
 
 
 def default_config():
@@ -51,4 +53,6 @@ def load_config(fileName):
         modelParams = model_params.load_model_params(sectionModel),
         miscParams = MiscParams(
                     height = sectionMisc.getint('height'),
-                    width = sectionMisc.getint('width')))
+                    width = sectionMisc.getint('width'),
+                    writeTrace = sectionMisc.getboolean('writeTrace'),
+                    traceFilePrefix = sectionMisc['traceFilePrefix']))

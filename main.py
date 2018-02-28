@@ -11,6 +11,7 @@ import model_params
 import state_generator
 import palette
 import config
+from tracewriter import TraceWriter
 
 DEFAULT_PALETTE_FILE = 'palette.ini'
 DEFAULT_CONFIG_FILE = 'config.ini'
@@ -41,6 +42,11 @@ class MainWindow(object):
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
         self.init_menu()
         self.play = False
+        if conf.miscParams.writeTrace:
+            self.traceWriter = TraceWriter(conf)
+            self.traceWriter.write(self.currentStep, self.numBacteria, self.numPredators)
+        else:
+            self.traceWriter = None
     
     def init_menu(self):
         """
@@ -110,6 +116,8 @@ class MainWindow(object):
         self.currentStep+=1
         self.numBacteria = self.model.count_bacteria()
         self.numPredators = self.model.count_predators()
+        if self.traceWriter is not None:
+            self.traceWriter.write(self.currentStep, self.numBacteria, self.numPredators)
         if self.check_for_halt():
             self.play = False
         self.draw_field()
