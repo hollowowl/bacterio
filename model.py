@@ -133,6 +133,8 @@ class CoreModel(object):
         '''
         Checks if number of bacteria near hexCoords in radius BACT_OVERCROWD_RADIUS less than BACT_OVERCROWD
         '''
+        if self.modelParams.BACT_OVERCROWD<=0:
+            return True
         res = 0
         coords = self.field.get_all_within(hexCoords, self.modelParams.BACT_OVERCROWD_RADIUS)
         for hc in coords:
@@ -144,6 +146,8 @@ class CoreModel(object):
         '''
         Checks if number of bacteria near hexCoords in radius PR_OVERCROWD_RADIUS less than PR_OVERCROWD
         '''
+        if self.modelParams.PR_OVERCROWD<=0:
+            return True
         res = 0
         coords = self.field.get_all_within(hexCoords, self.modelParams.PR_OVERCROWD_RADIUS)
         for hc in coords:
@@ -159,9 +163,12 @@ class CoreModel(object):
             return hexCoords
         for r in range(1, self.modelParams.PR_SIGHT+1):
             cells = self.field.get_at_exact_range(hexCoords, r)
+            possiblePos = []
             for hc in cells:
                 if hc in self.bacteriaPositions:
-                    return hc
+                    possiblePos.append(hc)
+            if len(possiblePos)>0:
+                return random.choice(possiblePos)
         return None
     
     def add_bacteria(self, hexCoords):
