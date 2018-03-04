@@ -17,7 +17,7 @@ class CoreModel(object):
     'modelParams' is ModelParams instance,
     'bacteriaPositions' and 'predatorPositions' are dicts with keys HexCoords and values lists of Bacteria and Predator
     '''
-    __slots__ = ['modelParams', 'field', 'bacteriaPositions', 'predatorPositions']
+    __slots__ = ('modelParams', 'field', 'bacteriaPositions', 'predatorPositions')
     
     def __init__(self, modelParams, state):
         '''
@@ -163,4 +163,28 @@ class CoreModel(object):
                 if hc in self.bacteriaPositions:
                     return hc
         return None
-            
+    
+    def add_bacteria(self, hexCoords):
+        '''
+        Adds bacteria to given cell
+        '''
+        if not hexCoords in self.bacteriaPositions:
+            self.bacteriaPositions[hexCoords] = []
+        self.bacteriaPositions[hexCoords].append(Bacteria())
+    
+    def add_predator(self, hexCoords):
+        '''
+        Adds predator to given cell
+        '''
+        if not hexCoords in self.predatorPositions:
+            self.predatorPositions[hexCoords] = []
+        self.predatorPositions[hexCoords].append(Predator(self.modelParams.PR_INIT_ENERGY))
+        
+    def clear_cell(self, hexCoords):
+        '''
+        Removes all creatures from given cell
+        '''
+        if hexCoords in self.bacteriaPositions:
+            self.bacteriaPositions.pop(hexCoords)
+        if hexCoords in self.predatorPositions:
+            self.predatorPositions.pop(hexCoords)
