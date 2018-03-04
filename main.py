@@ -9,6 +9,7 @@ from hexafield import HexCoords
 import model
 import model_params
 import state_generator
+import state
 import palette
 import config
 from tracewriter import TraceWriter
@@ -34,19 +35,22 @@ class MainWindow(object):
         self.model = model.CoreModel(conf.modelParams, state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams))
         self.displayCoords = self.canvas.create_text(conf.miscParams.width-200,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.displayTotal = self.canvas.create_text(15,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
-        self.currentStep = 0
-        self.haltReason = ''
-        self.numBacteria = self.model.count_bacteria()
-        self.numPredators = self.model.count_predators()
-        self.draw_field()
+        self.init_board_state()
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
         self.init_menu()
-        self.play = False
         if conf.miscParams.writeTrace:
             self.traceWriter = TraceWriter(conf)
             self.traceWriter.write(self.currentStep, self.numBacteria, self.numPredators)
         else:
             self.traceWriter = None
+    
+    def init_board_state(self):
+        self.currentStep = 0
+        self.haltReason = ''
+        self.numBacteria = self.model.count_bacteria()
+        self.numPredators = self.model.count_predators()
+        self.draw_field()
+        self.play = False
     
     def init_menu(self):
         """
@@ -134,10 +138,12 @@ class MainWindow(object):
         return False
     
     def open_state(self):
-        pass
+        self.model.parse_state(state.load_state_dlg())
+        self.init_board_state()
         
     def save_state(self):
-        pass
+        state.save_state_dlg(state.BacterioState(self.model.field, self.model.bacteriaPositions, self.model.predatorPositions))
+       
        
 if __name__=='__main__':
     root = Tk()
