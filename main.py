@@ -33,7 +33,7 @@ class MainWindow(object):
         self.palette = palette.load_palette(DEFAULT_PALETTE_FILE)
         self.canvas = Canvas(self.tk, width=conf.miscParams.width, height=conf.miscParams.height, bg=self.palette.background)
         self.canvas.pack()
-        self.model = model.CoreModel(conf.modelParams, state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams))
+        self.model = model.RapidBacteriaModel(conf.modelParams, state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams))
         self.displayCoords = self.canvas.create_text(conf.miscParams.width-200,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.displayTotal = self.canvas.create_text(15,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.init_board_state()
@@ -44,6 +44,7 @@ class MainWindow(object):
             self.traceWriter.write(self.currentStep, self.numBacteria, self.numPredators)
         else:
             self.traceWriter = None
+        self.stepDelay = conf.miscParams.stepDelay
     
     def init_board_state(self):
         self.currentStep = 0
@@ -140,7 +141,7 @@ class MainWindow(object):
             self.play = False
         self.draw_field()
         if self.play:
-            self.tk.after(25,self.step)
+            self.tk.after(self.stepDelay,self.step)
     
     def check_for_halt(self):
         if self.numPredators==0:

@@ -195,3 +195,35 @@ class CoreModel(object):
             self.bacteriaPositions.pop(hexCoords)
         if hexCoords in self.predatorPositions:
             self.predatorPositions.pop(hexCoords)
+
+
+class RapidBacteriaModel(CoreModel):
+    '''
+    Describes model with rapid moving bacteria. Each turn they divide or move for two cells
+    '''
+    __slots__ = ()
+    
+    def __init__(self, modelParams, state):
+        CoreModel.__init__(self, modelParams, state)
+    
+    def step_bacteria(self):
+        newBacteriaPositions = dict()
+        for hc in self.bacteriaPositions:
+            notOvercrowded = self.check_bacteria_overcrowd(hc)
+            for bact in self.bacteriaPositions[hc]:
+                if notOvercrowded and rand_p(self.modelParams.P_BACT_DIVIDE)==1:
+                    if not hc in newBacteriaPositions:
+                        newBacteriaPositions[hc] = []
+                    newBacteriaPositions[hc].append(Bacteria())
+                    newBacteriaPositions[hc].append(Bacteria())
+                elif rand_p(self.modelParams.P_BACT_STAY)==1:
+                    if not hc in newBacteriaPositions:
+                        newBacteriaPositions[hc] = []
+                    newBacteriaPositions[hc].append(bact)
+                else:
+                    newPos = random.choice(self.field.get_at_exact_range(hc,self.modelParams.BACT_VELOCITY))
+                    if not newPos in newBacteriaPositions:
+                        newBacteriaPositions[newPos] = []
+                    newBacteriaPositions[newPos].append(bact)
+        self.bacteriaPositions = newBacteriaPositions
+    
