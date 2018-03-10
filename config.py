@@ -8,11 +8,12 @@ import configparser
 import model_params
 
 Config = namedtuple('Config', ['fieldParams', 'modelParams', 'miscParams'])
-FieldParams = namedtuple('FieldParams', ['radius', 'initBacteria', 'initPredators'])
+FieldParams = namedtuple('FieldParams', ['stateFile', 'radius', 'initBacteria', 'initPredators'])
 MiscParams = namedtuple('MiscParams', ['height', 'width', 'writeTrace', 'traceFilePrefix', 'stepDelay'])
 
 def default_field_params():
     return FieldParams(
+            stateFile = None,
             radius = 6,
             initBacteria = 100,
             initPredators = 40)
@@ -48,9 +49,10 @@ def load_config(fileName):
     sectionMisc = config['MISC']
     return Config(
         fieldParams = FieldParams (
-                    radius = sectionField.getint('radius'),
-                    initBacteria = sectionField.getint('initBacteria'),
-                    initPredators = sectionField.getint('initPredators')),
+                    stateFile = sectionField.get('stateFile', fallback=None),
+                    radius = sectionField.getint('radius', fallback=2),
+                    initBacteria = sectionField.getint('initBacteria', fallback=0),
+                    initPredators = sectionField.getint('initPredators', fallback=0)),
         modelParams = model_params.load_model_params(sectionModel),
         miscParams = MiscParams(
                     height = sectionMisc.getint('height'),

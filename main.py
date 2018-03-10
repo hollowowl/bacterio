@@ -22,18 +22,27 @@ class MainWindow(object):
     """
     Represents main application window
     """
+    __slots__ = ('tk', 'height', 'width', 'conv', 'palette', 'canvas', 'model', 
+        'displayCoords', 'displayTotal', 'traceWriter', 'currentStep',
+        'haltReason', 'numBacteria', 'numPredators', 'currHexCoords',
+        'play', 'stepDelay')
+    
     def __init__(self, tk):
         '''
         tk is is Tk object to use for main app window
         '''
         self.tk = tk
         conf = config.load_config(DEFAULT_CONFIG_FILE)
-        maxHexRadius = min( conf.miscParams.width/(2.0*(2.0*conf.fieldParams.radius+1)), conf.miscParams.height/(2.0*hexafield.SQRT3D2*(2.0*conf.fieldParams.radius+1)) )
-        self.conv = hexafield.HexCoordConverter( leftHex0=conf.miscParams.width/2, topHex0=conf.miscParams.height/2, hexRadius = maxHexRadius )
+        self.height = conf.miscParams.height
+        self.width = conf.miscParams.width
         self.palette = palette.load_palette(DEFAULT_PALETTE_FILE)
         self.canvas = Canvas(self.tk, width=conf.miscParams.width, height=conf.miscParams.height, bg=self.palette.background)
         self.canvas.pack()
-        self.model = model.RapidBacteriaModel(conf.modelParams, state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams))
+        if conf.fieldParams.stateFile is None:
+            initState = state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams)
+        else:
+            initState = state.load_state(conf.fieldParams.stateFile)
+        self.model = model.RapidBacteriaModel(conf.modelParams, initState)
         self.displayCoords = self.canvas.create_text(conf.miscParams.width-200,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.displayTotal = self.canvas.create_text(15,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.init_board_state()
@@ -46,7 +55,15 @@ class MainWindow(object):
             self.traceWriter = None
         self.stepDelay = conf.miscParams.stepDelay
     
+    def calculate_max_hex_radius(self):
+        radius = self.model.field.get_max_coord_value()
+        return min( self.width/(2.0*(2.0*radius+1)), self.height/(2.0*hexafield.SQRT3D2*(2.0*radius+1)) )
+    
     def init_board_state(self):
+        self.conv = hexafield.HexCoordConverter( 
+                    leftHex0 = self.width/2,
+                    topHex0 = self.height/2,
+                    hexRadius = self.calculate_max_hex_radius() )
         self.currentStep = 0
         self.haltReason = ''
         self.numBacteria = self.model.count_bacteria()

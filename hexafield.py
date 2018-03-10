@@ -172,6 +172,20 @@ class HexafieldBase(object):
             if hc in self._field: res.append(hc)
         return res
     
+    def get_max_coord_value(self):
+        '''
+        Returns the maximum absolute coordinate value over all cells
+        '''
+        result = 0
+        for cell in self._field:
+            if abs(cell.x) > result:
+                result = abs(cell.x)
+            if abs(cell.y) > result:
+                resutl = abs(cell.y)
+            if abs(cell.z) > result:
+                result = cell.z
+        return result
+
 
 class CircleHexafield(HexafieldBase):
     '''
@@ -378,6 +392,10 @@ if __name__=='__main__':
             self.assertTrue( HexCoords(0,0) in nb)
             self.assertTrue( HexCoords(1,0) in nb)
             self.assertTrue( HexCoords(2,0) in nb)
-
+        
+        def test_max_coord_value(self):
+            hf = CircleHexafield(7)
+            self.assertEqual(hf.get_max_coord_value(), 7)
+            
     
     unittest.main()
