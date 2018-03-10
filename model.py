@@ -195,7 +195,13 @@ class CoreModel(object):
             self.bacteriaPositions.pop(hexCoords)
         if hexCoords in self.predatorPositions:
             self.predatorPositions.pop(hexCoords)
-
+    
+    def clear_all(self):
+        '''
+        Removes all creatures from entire board
+        '''
+        self.bacteriaPositions.clear()
+        self.predatorPositions.clear()
 
 class RapidBacteriaModel(CoreModel):
     '''

@@ -76,6 +76,10 @@ class MainWindow(object):
         mProcess.add_command(label="Play...", underline=0, command=self.start_play, accelerator="R")
         self.tk.bind('r', lambda evt: self.start_play())
         mRoot.add_cascade(label="Process", underline=0, menu=mProcess)
+        mBoard = Menu(mRoot)
+        mBoard.add_command(label="Clear", underline=0, command=self.clear_board, accelerator="Ctrl+C")
+        self.tk.bind('<Control-c>', lambda evt: self.clear_board())
+        mRoot.add_cascade(label="Board", underline=0, menu=mBoard)
         self.tk.bind('z', lambda evt: self.add_bacteria())
         self.tk.bind('<Button-1>', lambda evt: self.add_bacteria())
         self.tk.bind('x', lambda evt: self.add_predator())
@@ -185,7 +189,12 @@ class MainWindow(object):
         self.numBacteria = self.model.count_bacteria()
         self.numPredators = self.model.count_predators()
         self.proceed_cell_change()
-
+    
+    def clear_board(self):
+        self.model.clear_all()
+        self.numBacteria = 0
+        self.numPredators = 0
+        self.proceed_cell_change()
        
        
 if __name__=='__main__':
