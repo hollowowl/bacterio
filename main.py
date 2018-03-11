@@ -17,6 +17,8 @@ from tracewriter import TraceWriter
 
 DEFAULT_PALETTE_FILE = 'palette.ini'
 DEFAULT_CONFIG_FILE = 'config.ini'
+DEFAULT_MISC_FILE = 'misc.ini'
+
 
 class MainWindow(object):
     """
@@ -33,27 +35,28 @@ class MainWindow(object):
         '''
         self.tk = tk
         conf = config.load_config(DEFAULT_CONFIG_FILE)
-        self.height = conf.miscParams.height
-        self.width = conf.miscParams.width
+        miscParams = config.load_misc_params(DEFAULT_MISC_FILE)
+        self.height = miscParams.height
+        self.width = miscParams.width
         self.palette = palette.load_palette(DEFAULT_PALETTE_FILE)
-        self.canvas = Canvas(self.tk, width=conf.miscParams.width, height=conf.miscParams.height, bg=self.palette.background)
+        self.canvas = Canvas(self.tk, width=miscParams.width, height=miscParams.height, bg=self.palette.background)
         self.canvas.pack()
         if conf.fieldParams.stateFile is None:
             initState = state_generator.generate_state(conf.fieldParams.radius,conf.fieldParams.initBacteria,conf.fieldParams.initPredators,conf.modelParams)
         else:
             initState = state.load_state(conf.fieldParams.stateFile)
         self.model = model.RapidBacteriaModel(conf.modelParams, initState)
-        self.displayCoords = self.canvas.create_text(conf.miscParams.width-200,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
-        self.displayTotal = self.canvas.create_text(15,conf.miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
+        self.displayCoords = self.canvas.create_text(miscParams.width-200,miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
+        self.displayTotal = self.canvas.create_text(15,miscParams.height-75, anchor=W, fill=self.palette.text,font='Consolas 14 bold', text="")
         self.init_board_state()
         self.canvas.bind("<Motion>", self.on_canvas_mouse_move)
         self.init_menu()
-        if conf.miscParams.writeTrace:
+        if miscParams.writeTrace:
             self.traceWriter = TraceWriter(conf)
             self.traceWriter.write(self.currentStep, self.numBacteria, self.numPredators)
         else:
             self.traceWriter = None
-        self.stepDelay = conf.miscParams.stepDelay
+        self.stepDelay = miscParams.stepDelay
     
     def calculate_max_hex_radius(self):
         radius = self.model.field.get_max_coord_value()
