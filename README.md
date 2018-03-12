@@ -8,25 +8,25 @@ _**Disclaimer:**_ it's very unlikely that presented simulation model could be ap
 ## Getting started
 
 ### Prerequisites
-* [Python 3+](https://www.python.org/downloads/) (tested with  3.6.3)
-* [TkInter](https://docs.python.org/3/library/tkinter.html) support (you may check it running `python -m tkinter`)
++ [Python 3+](https://www.python.org/downloads/) (tested with  3.6.3)
++ [TkInter](https://docs.python.org/3/library/tkinter.html) support (you may check it running `python -m tkinter`)
 
 ### Installing and running
 
-Just clone (or fork) this repo, `cd` to its folder and run
+Just clone (or fork) this repo, `cd` to its folder and run  
 ```
 python main.py
 ```
 
 ### Controls
-`r` - enter *play* mode (proceed step after step with a brief delay); *play* will stop if *halt conditions* met
-`<Space>` - proceed one step (also exit *play* mode)
-`z` or `<Mouse-1>` - place bacteria on cell under cursor
-`x` or `<Mouse-3>` - place predator on cell under cursor
-`c` or `<Mouse-2>` - clear cell under cursor
-`<Ctrl>+s` - save current state to file
-`<Ctrl>+o` - open saved state
-`<Esc>` - exit
+`r` - enter *play* mode (proceed step after step with a brief delay); *play* will stop if *halt conditions* met  
+`<Space>` - proceed one step (also exit *play* mode)  
+`z` or `<Mouse-1>` - place bacteria on cell under cursor  
+`x` or `<Mouse-3>` - place predator on cell under cursor  
+`c` or `<Mouse-2>` - clear cell under cursor  
+`<Ctrl>+s` - save current state to file  
+`<Ctrl>+o` - open saved state  
+`<Esc>` - exit  
 
 ### Halt conditions
 Currently there are two conditions which could cause *play* mode to stop:
