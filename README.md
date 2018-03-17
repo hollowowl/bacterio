@@ -22,7 +22,7 @@ python main.py
 ```
 
 ### Controls
-`r` - enter *play* mode (proceed step after step with a brief delay); *play* will stop if [halt conditions](#halt-conditions) met  
+`r` - enter *play* mode (proceed step after step with a brief delay); *play* will stop if *halt conditions* met  
 `<Space>` - proceed one step (also exit *play* mode)  
 `z` or `<Mouse-1>` - place bacteria on cell under cursor  
 `x` or `<Mouse-3>` - place predator on cell under cursor  
