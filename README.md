@@ -1,4 +1,6 @@
-# Bacterio - simulating simple (hypothetical) protozoa biosystem
+![Logo](logo.png)
+
+# **Bacterio** - simulating simple hypothetical protozoa biosystem
 
 Consider a Petri dish fullfilled with some growth medium and two types of protozoa: one is suppoted by growth medium (later referred as _bacteria_) while the other feeds on the first one (later referred as _predators_). As far as there are plenty of medium bacteria are always well-fed unlike predators those need to hunt bacteria to survive and breed. Lucky for them bacteria are 'blind' - they don't aware of predators.
 
@@ -51,3 +53,6 @@ Miscellaneous application parameters are loaded from `misc.ini` file.
 (TODO:)
 
 
+## License
+
+[MIT](LICENSE)
