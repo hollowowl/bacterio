@@ -27,7 +27,7 @@ python main.py
 ### Controls
 `r` - enter 'play' mode (proceed step after step with a brief delay); 'play' will stop if *halt conditions* met  
 `<Space>` - proceed one step (also exit 'play' mode)  
-`z` or `<Mouse-1>` - place bacteria on cell under cursor  
+`z` or `<Mouse-1>` - place bacterium on cell under cursor  
 `x` or `<Mouse-3>` - place predator on cell under cursor  
 `c` or `<Mouse-2>` - clear cell under cursor  
 `<Ctrl>+c` - clear the entire field  
@@ -45,8 +45,8 @@ Changing state (by adding or removing protozoa) always resets halt conditions.
 ## Model description
 
 Field consists of hexagonal cells, each protozoan at any time occupies only one cell.  
-At any given moment each bacteria has only one state parameter - its position. Each predator also described by its energy (along with position). At the beginning each predator has `PR_INIT_ENERGY`.  
-Each turn all protozoa make their turns sequentially: each predator first, then each bacteria.  
+At any given moment each bacterium has only one state parameter - its position. Each predator also described by its energy (along with position). At the beginning each predator has `PR_INIT_ENERGY`.  
+Each turn all protozoa make their turns sequentially: each predator first, then each bacterium.  
 
 #### Predator's turn  
 1. If all of the following division requirements are met, predator divides with probability `P_PR_DIVIDE` - in cell it occupies there will be two predators with energy `(E-PR_DIVIDE_COST)//2` each, where `E` is current predator's energy. Newborns will not participate in current turn.  
@@ -54,11 +54,11 @@ Predator division requirements:
   + `E >= PR_DIVIDE_ENERGY`  
   + there is less than `PR_OVERCROWD` predators within `PR_OVERCROWD_RADIUS` cells around given predator  
 2. If predator is not divided and its energy is greater or equal than `PR_MAX_ENERGY` then it's considered well-fed. With probability `P_PR_STAY` it will remain still, otherwise it will move by one cell in any allowed direction. It will lose `PR_TURN_COST` in both cases.  
-3. If predator is not divided and its energy is less than `PR_MAX_ENERGY` then it's considered hungry. Its energy lowers by `PR_TURN_COST`. If energy reaches zero (or below) predators dies (without moving). Otherwise it will move by one cell in the direction of closest bacteria it can find in `PR_SIGHT` radius. If it reaches one bacteria will be eaten and predator's energy increases by `PR_FEED_VALUE`. Predator can eat only one bacteria within a turn. Predator will not move if it's hungry and at least one bacteria is in the same cell with it. If there are no bacteria in `PR_SIGHT` radius, predator moves by one cell in any allowed direction.  
+3. If predator is not divided and its energy is less than `PR_MAX_ENERGY` then it's considered hungry. Its energy lowers by `PR_TURN_COST`. If energy reaches zero (or below) predators dies (without moving). Otherwise it will move by one cell in the direction of closest bacterium it can find in `PR_SIGHT` radius. If it reaches one bacterium will be eaten and predator's energy increases by `PR_FEED_VALUE`. Predator can eat only one bacterium within a turn. Predator will not move if it's hungry and at least one bacterium is in the same cell with it. If there are no bacteria in `PR_SIGHT` radius, predator moves by one cell in any allowed direction.  
 
-#### Bacteria's turn
-1. If there is less than `BACT_OVERCROWD` bacteria within `BACT_OVERCROWD_RADIUS` cells around given bacteria it divides with probability `P_BACT_DIVIDE` - in cell it occupies there will be two new bacteria.
-2. If bacteria is not divided it remains still with probability `P_BACT_STAY` or moves in any direction by `BACT_VELOCITY` cells. (Exactly by this value - it will not move by one cell if `BACT_VELOCITY == 2` for example.)
+#### Bacterium's turn
+1. If there is less than `BACT_OVERCROWD` bacteria within `BACT_OVERCROWD_RADIUS` cells around given bacterium it divides with probability `P_BACT_DIVIDE` - in cell it occupies there will be two new bacteria.
+2. If bacterium is not divided it remains still with probability `P_BACT_STAY` or moves in any direction by `BACT_VELOCITY` cells. (Exactly by this value - it will not move by one cell if `BACT_VELOCITY == 2` for example.)
 
 ## Configuration
 
@@ -76,9 +76,9 @@ Initial field parameters are loaded from `FIELD` category in [config.ini](config
 Model parameters are loaded from `MODEL` category in [config.ini](config.ini) file.  
 The following model parameters currently supported:  
 *for bacteria*  
-`P_BACT_DIVIDE` - probability that bacteria will divide on two bacteria (both in the same cell) unless there are >= `BACT_OVERCROWD` bacteria in given cell  
-`P_BACT_STAY` -  probability that bacteria will stand still (in case if it not divided)  
-`BACT_OVERCROWD` -  number of maximum number of bacteria within BACT_OVERCROWD_RADIUS (if more or equal, bacteria will not divide)  
+`P_BACT_DIVIDE` - probability that bacterium will divide on two bacteria (both in the same cell) unless there are >= `BACT_OVERCROWD` bacteria in given cell  
+`P_BACT_STAY` -  probability that bacterium will stand still (in case if it not divided)  
+`BACT_OVERCROWD` -  number of maximum number of bacteria within BACT_OVERCROWD_RADIUS (if more or equal, bacterium will not divide)  
 `BACT_OVERCROWD_RADIUS`  
 `BACT_VELOCITY` - bacteria's velocity (cells per move)  
   
