@@ -44,13 +44,12 @@ Changing state (by adding or removing protozoa) always resets halt conditions.
 
 ## Model description
 
-### Basics 
 Field consists of hexagonal cells, each protozoan at any time occupies only one cell.  
 At any given moment each bacteria has only one state parameter - its position. Each predator also described by its energy (along with position). At the beginning each predator has `PR_INIT_ENERGY`.  
 Each turn all protozoa make their turns sequentially: each predator first, then each bacteria.  
 
 #### Predator's turn  
-1. If all of the following division requirements are met, predator divides with probability `P_PR_DIVIDE` - in cell it occupies there will be two predators with energy `(E-PR_DIVIDE_COST)//2` each, where `E` is current predator's energy. Newborns will not participate in current turn.
+1. If all of the following division requirements are met, predator divides with probability `P_PR_DIVIDE` - in cell it occupies there will be two predators with energy `(E-PR_DIVIDE_COST)//2` each, where `E` is current predator's energy. Newborns will not participate in current turn.  
 Predator division requirements:  
   + `E >= PR_DIVIDE_ENERGY`  
   + there is less than `PR_OVERCROWD` predators within `PR_OVERCROWD_RADIUS` cells around given predator  
@@ -76,14 +75,14 @@ Initial field parameters are loaded from `FIELD` category in [config.ini](config
 ### Configuring model parameters
 Model parameters are loaded from `MODEL` category in [config.ini](config.ini) file.  
 The following model parameters currently supported:  
-for *bacteria*  
+*for bacteria*  
 `P_BACT_DIVIDE` - probability that bacteria will divide on two bacteria (both in the same cell) unless there are >= `BACT_OVERCROWD` bacteria in given cell  
 `P_BACT_STAY` -  probability that bacteria will stand still (in case if it not divided)  
 `BACT_OVERCROWD` -  number of maximum number of bacteria within BACT_OVERCROWD_RADIUS (if more or equal, bacteria will not divide)  
 `BACT_OVERCROWD_RADIUS`  
 `BACT_VELOCITY` - bacteria's velocity (cells per move)  
   
-for *predators*  
+*for predators*  
 `PR_INIT_ENERGY` - initial predator's energy  
 `PR_MAX_ENERGY` - value of energy when predator stops hunting (until loose energy below this value)  
 `PR_DIVIDE_ENERGY` - minimal energy value at which predator's divide is possible. Offsprings will have `(E-PR_DIVIDE_COST)//2` energy  
