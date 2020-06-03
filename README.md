@@ -2,7 +2,7 @@
 
 # **Bacterio** - simulating simple hypothetical protozoa biosystem
 
-Consider a Petri dish fullfilled with some growth medium and two types of protozoa: one is suppoted by growth medium (later referred as _bacteria_) while the other feeds on the first one (later referred as _predators_). As far as there are plenty of medium bacteria are always well-fed unlike predators who need to hunt bacteria to survive and breed. Lucky for them bacteria are 'blind' - they don't aware of predators.
+Consider a Petri dish fullfilled with some growth medium and two types of protozoa: one is supported by growth medium (later referred as _bacteria_) while the other feeds on the first one (later referred as _predators_). As far as there are plenty of medium bacteria are always well-fed unlike predators who need to hunt bacteria to survive and breed. Lucky for them bacteria are 'blind' - they don't aware of predators.
 
 _**Disclaimer:**_ it's very unlikely that presented simulation model could be applied for any real protozoa biosystem. The main purpose of this project is to develop fluctuating but balanced non-deterministic system.  
 (And yes, this is just another [Zero-player game](https://en.wikipedia.org/wiki/Zero-player_game))
@@ -19,6 +19,11 @@ Just clone (or fork) this repo, `cd` to its folder and run
 ```
 python -m app
 ```
+or
+```
+python3 -m app
+```
+(if you have both Python 3+ and 2+ installed - very common case for Linux repos)
 
 #### Running tests  
 ```
@@ -33,7 +38,7 @@ BACTERIO_OPTIONAL_TESTS=1 python -m unittest
 *Bacterio* has two processing modes - 'step-by-step' and 'play'. During 'step-by-step' mode next iteration will be calculated only if `<Space>` key is pressed. During 'play' mode iterations processed continuously after a brief delay between iterations. Pressing `<Space>` in 'play' mode switches to 'step-by-step' mode.
 
 ### Controls
-`r` - enter 'play' mode (proceed step after step with a brief delay); 'play' will stop if *halt conditions* met  
+`p` - enter 'play' mode (proceed step after step with a brief delay); 'play' will stop if *halt conditions* met  
 `<Space>` - proceed one step (also exit 'play' mode)  
 `z` or `<Mouse-1>` - place bacterium on cell under cursor  
 `x` or `<Mouse-3>` - place predator on cell under cursor  
@@ -71,17 +76,17 @@ Predator division requirements:
 ## Configuration
 
 ### Configuring GUI colors (palette)
-Colors are loaded from [palette.ini](palette.ini) file. You may change them by using Tk color names (RGB like #000000 or [symbolic](https://www.tcl.tk/man/tcl8.5/TkCmd/colors.htm) names). Some palletes are stored in [palettes](palletes) directory. To use one of them replace [palette.ini](palette.ini).
+Colors are loaded from [palette.ini](config/palette.ini) file. You may change them by using Tk color names (RGB like #000000 or [symbolic](https://www.tcl.tk/man/tcl8.5/TkCmd/colors.htm) names). Some palettes are stored in [palettes](config/other_palettes) directory. To use one of them replace [palette.ini](config/palette.ini).
 
 ### Configuring initial field parameters
-Initial field parameters are loaded from `FIELD` category in [config.ini](config.ini) file.  
+Initial field parameters are loaded from `FIELD` category in [rules.ini](config/rules.ini) file.  
 `stateFile` - forces to load initial field state from given file ignoring the rest of `FIELD` section  
 `radius` - board (_Petri dish_) radius (cells)
 `initBacteria` - number of bacteria should be randomly placed on field during initialization  
 `initPredators` - number of predators should be randomly placed on field during initialization  
 
 ### Configuring model parameters
-Model parameters are loaded from `MODEL` category in [config.ini](config.ini) file.  
+Model parameters are loaded from `MODEL` category in [rules.ini](config/rules.ini) file.  
 The following model parameters currently supported:  
 *for bacteria*  
 `P_BACT_DIVIDE` - probability that bacterium will divide on two bacteria (both in the same cell) unless there are >= `BACT_OVERCROWD` bacteria in given cell  
@@ -105,7 +110,7 @@ The following model parameters currently supported:
   
 
 ### Configuring miscellaneous parameters
-Miscellaneous application parameters are loaded from [misc.ini](misc.ini) file.  
+Miscellaneous application parameters are loaded from [misc.ini](config/misc.ini) file.  
 `width` - field width (in px)  
 `height` - field height (in px)  
 `writeTrace` - if `true` trace will be writen after each play; `traceFilePrefix` should be specified in that case  
@@ -117,4 +122,4 @@ Miscellaneous application parameters are loaded from [misc.ini](misc.ini) file.
 [MIT](LICENSE)
 
 ## Acknowledgements
-+ Amit Patel ([Red Blob Games](https://www.redblobgames.com)) for great article about [hexagonal grids](https://www.redblobgames.com/grids/hexagons)
++ Amit Patel ([Red Blob Games](https://www.redblobgames.com)) for the great article about [hexagonal grids](https://www.redblobgames.com/grids/hexagons)
