@@ -5,18 +5,18 @@ Describes bacterio's configuration - board, model and other parameters
 from collections import namedtuple
 import configparser
 
-import model_params
+import app.model_params as model_params
 
-Config = namedtuple('Config', ['fieldParams', 'modelParams'])
+Rules = namedtuple('Rules', ['fieldParams', 'modelParams'])
 FieldParams = namedtuple('FieldParams', ['stateFile', 'radius', 'initBacteria', 'initPredators'])
 MiscParams = namedtuple('MiscParams', ['height', 'width', 'writeTrace', 'traceFilePrefix', 'stepDelay'])
 
 def default_field_params():
     return FieldParams(
             stateFile = None,
-            radius = 6,
-            initBacteria = 100,
-            initPredators = 40)
+            radius = 15,
+            initBacteria = 200,
+            initPredators = 20)
     
             
 def default_misc_params():
@@ -28,13 +28,13 @@ def default_misc_params():
             stepDelay = 25)
 
 
-def default_config():
-    return Config(
+def default_rules():
+    return Rules(
             fieldParams = default_field_params(),
             modelParams = model_params.default_model_params())
 
 
-def load_config(fileName):
+def load_rules(fileName):
     '''
     Tries to load config from given .INI file.
     If failes returns default_config()
@@ -42,10 +42,10 @@ def load_config(fileName):
     config = configparser.ConfigParser()
     config.read(fileName)
     if config.sections() == []:
-        return default_config()
+        return default_rules()
     sectionField = config['FIELD']
     sectionModel = config['MODEL']
-    return Config(
+    return Rules(
         fieldParams = FieldParams (
                     stateFile = sectionField.get('stateFile', fallback=None),
                     radius = sectionField.getint('radius', fallback=2),

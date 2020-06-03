@@ -5,7 +5,7 @@ Describes a single bacterio state - field with creatures' positions
 import pickle
 from tkinter import filedialog
 
-from hexafield import CircleHexafield
+from app.hexafield import CircleHexafield
 
 class BacterioState(object):
     '''
@@ -59,22 +59,3 @@ def load_state_dlg():
     if fileName=='': 
         return None
     return load_state(fileName)
-
-
-if __name__=='__main__':
-    import unittest
-    import os
-    
-    class TestStatePickling(unittest.TestCase):
-        def test(self):
-            state = BacterioState(CircleHexafield(3), {(1,1):1}, {(2,2):2, (3,3):3})
-            tmpFile = 'tmp.bsf'
-            save_state(state, tmpFile)
-            state1 = load_state(tmpFile)
-            self.assertEqual(state.field._field,state1.field._field)
-            self.assertEqual(state.bacteriaPositions,state1.bacteriaPositions)
-            self.assertEqual(state.predatorPositions,state1.predatorPositions)
-            os.remove(tmpFile)
-            
-            
-    unittest.main()

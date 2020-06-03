@@ -1,2 +1,16 @@
-*.btf
 __pycache__
+*.pyc
+
+# IDEs/Editors
+*.iml
+.idea
+.vimrc
+.vim
+*.swp
+*.swo
+/.project
+.vscode
+.DS_Store
+
+# Bacterio trace files
+*.btf

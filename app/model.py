@@ -4,10 +4,9 @@ Describes core model of bacterio
 
 import random
 
-import hexafield
-from hexafield import HexCoords
-from creatures import Predator, Bacteria
-from rand_p import rand_p
+from app.hexafield import HexCoords, get_step_to
+from app.creatures import Predator, Bacteria
+from app.rand_p import rand_p
 
 
 class CoreModel(object):
@@ -72,7 +71,7 @@ class CoreModel(object):
                     if pr.energy>0:
                         closestBact = self.find_closest_bacteria(hc)
                         if closestBact is not None:
-                            newPos = hexafield.get_step_to(hc, closestBact)
+                            newPos = get_step_to(hc, closestBact)
                             if not newPos in newPredatorPositions:
                                 newPredatorPositions[newPos] = []
                             newPredatorPositions[newPos].append(pr)

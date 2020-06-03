@@ -15,10 +15,18 @@ _**Disclaimer:**_ it's very unlikely that presented simulation model could be ap
 + [TkInter](https://docs.python.org/3/library/tkinter.html) support (you may check it running `python -m tkinter`)  
 
 ### Installing and running
-
 Just clone (or fork) this repo, `cd` to its folder and run  
 ```
-python main.py
+python -m app
+```
+
+#### Running tests  
+```
+python -m unittest
+```
+With optional tests
+```
+BACTERIO_OPTIONAL_TESTS=1 python -m unittest
 ```
 
 ### Process

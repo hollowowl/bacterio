@@ -4,20 +4,19 @@ Main GUI window of bacterio
 
 from tkinter import *
 
-import hexafield
-from hexafield import HexCoords
-import model
-import model_params
-import state_generator
-import state
-import palette
-import config
-from tracewriter import TraceWriter
+import app.hexafield as hexafield
+import app.model as model
+import app.model_params as model_params
+import app.state_generator as state_generator
+import app.state as state
+import app.palette as palette
+import app.config as config
+from app.tracewriter import TraceWriter
 
 
-DEFAULT_PALETTE_FILE = 'palette.ini'
-DEFAULT_CONFIG_FILE = 'config.ini'
-DEFAULT_MISC_FILE = 'misc.ini'
+DEFAULT_PALETTE_FILE = 'config/palette.ini'
+DEFAULT_RULES_FILE = 'config/rules.ini'
+DEFAULT_MISC_FILE = 'config/misc.ini'
 
 
 class MainWindow(object):
@@ -34,7 +33,7 @@ class MainWindow(object):
         tk is is Tk object to use for main app window
         '''
         self.tk = tk
-        conf = config.load_config(DEFAULT_CONFIG_FILE)
+        conf = config.load_rules(DEFAULT_RULES_FILE)
         miscParams = config.load_misc_params(DEFAULT_MISC_FILE)
         self.height = miscParams.height
         self.width = miscParams.width
@@ -93,8 +92,8 @@ class MainWindow(object):
         mProcess = Menu(mRoot)
         mProcess.add_command(label="Step/Stop play", underline=0, command=self.stop_play_or_step, accelerator="Space")
         self.tk.bind('<space>', lambda evt: self.stop_play_or_step())
-        mProcess.add_command(label="Play...", underline=0, command=self.start_play, accelerator="R")
-        self.tk.bind('r', lambda evt: self.start_play())
+        mProcess.add_command(label="Play...", underline=0, command=self.start_play, accelerator="P")
+        self.tk.bind('p', lambda evt: self.start_play())
         mRoot.add_cascade(label="Process", underline=0, menu=mProcess)
         mBoard = Menu(mRoot)
         mBoard.add_command(label="Clear", underline=0, command=self.clear_board, accelerator="Ctrl+C")
